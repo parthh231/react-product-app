@@ -9,7 +9,29 @@
 body {
   font-family: Arial, sans-serif;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--bg-color, #f5f5f5);
+  color: var(--text-color, #000);
+}
+
+/* theme-specific variables applied using a class on the root element */
+html.light {
+  --bg-color: #f5f5f5;
+  --text-color: #000;
+  --card-bg: white;
+  --header-bg: white;
+  --modal-bg: white;
+  --badge-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --badge-color: white;
+}
+
+html.dark {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
+  --card-bg: #1e1e1e;
+  --header-bg: #1f1f1f;
+  --modal-bg: #2a2a2a;
+  --badge-bg: linear-gradient(135deg, #444 0%, #666 100%);
+  --badge-color: #eee;
 }
 
 input[type='text'],
@@ -19,6 +41,20 @@ select {
   border: 1px solid #ddd;
   border-radius: 5px;
   margin-bottom: 15px;
+  color: var(--text-color);
+  background: var(--card-bg);
+}
+
+/* ensure option list text remains legible when theme changes */
+select option {
+  color: var(--text-color);
+  background: var(--card-bg);
+}
+
+/* if using dark mode with light dropdown, force black text */
+html.dark select,
+html.dark select option {
+  color: #EEEEEE;
 }
 
 input[type='text'] {
@@ -41,7 +77,7 @@ select {
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 15px;
-  background: white;
+  background: var(--card-bg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -68,11 +104,12 @@ select {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-color);
 }
 
 .card p {
   font-size: 14px;
-  color: #666;
+  color: var(--text-color);
 }
 
 .card button {
@@ -103,7 +140,7 @@ select {
 }
 
 .modal {
-  background: white;
+  background: var(--modal-bg);
   padding: 20px;
   width: 400px;
   border-radius: 10px;
@@ -121,7 +158,7 @@ select {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  background: white;
+  background: var(--header-bg);
   padding: 15px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -134,8 +171,8 @@ select {
 }
 
 .cart-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--badge-bg);
+  color: var(--badge-color);
   padding: 10px 20px;
   border-radius: 50px;
   font-size: 18px;
@@ -161,7 +198,7 @@ select {
   padding: 12px;
   margin-bottom: 12px;
   border-radius: 6px;
-  background: #fafafa;
+  background: var(--card-bg);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -170,7 +207,7 @@ select {
 .cart-item p {
   margin: 0;
   font-size: 14px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .delete-btn {
@@ -204,4 +241,130 @@ select {
 
 .close-btn:hover {
   background-color: #5a6268;
+}
+
+/* Sort Component Styling */
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.sort-label {
+  font-weight: 600;
+  color: white;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.sort-select {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  border: 2px solid transparent !important;
+  border-radius: 5px !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  background-color: #333 !important;
+  color: #EEEEEE !important;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 180px;
+}
+
+.sort-select:hover {
+  border-color: #667eea !important;
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.3) !important;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: #667eea !important;
+  box-shadow: 0 0 12px rgba(102, 126, 234, 0.5) !important;
+}
+
+.sort-select option {
+  padding: 10px;
+  background: #333;
+  color: #333;
+}
+
+/* Wishlist Button Styling */
+.wishlist-btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+.wishlist-btn {
+  background: none;
+  border: 2px solid #ddd;
+  padding: 10px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: #ccc;
+  opacity: 0.6;
+}
+
+.wishlist-btn:hover {
+  border-color: #ddd;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.wishlist-btn.in-wishlist {
+  border-color: #ff4458;
+  background-color: rgba(255, 68, 88, 0.1);
+  opacity: 1;
+  color: #ff4458;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(255, 68, 88, 0.3);
+}
+
+.wishlist-btn.in-wishlist:hover {
+  background-color: rgba(255, 68, 88, 0.2);
+  box-shadow: 0 0 18px rgba(255, 68, 88, 0.5);
+  transform: scale(1.15);
+}
+
+.skeleton-img{
+  width:100%;
+  height:150px;
+  background:#ddd;
+}
+
+.skeleton-text{
+  height:15px;
+  background:#ddd;
+  margin-top:10px;
+}
+
+.skeleton{
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:1}
+  50%{opacity:0.5}
+  100%{opacity:1}
+}
+
+.light {
+  background-color: white;
+  color: black;
+}
+
+.dark {
+  background-color: #121212;
+  color: white;
 }

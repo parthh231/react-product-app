@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CartModal = ({cart, closeCart, removeFromCart}) => {
+const CartModal = ({cart, closeCart, removeFromCart, increaseQty, decreaseQty}) => {
 
     const totalPrice = cart.reduce(
         (total,item) => total + item.price * item.quantity,0
@@ -23,6 +23,13 @@ const CartModal = ({cart, closeCart, removeFromCart}) => {
                         <p>
                            ${item.price} x {item.quantity} = ${(item.price * item.quantity).toFixed(2)}
                         </p>
+
+                        <button onClick={() => decreaseQty(item.id)}>−</button>
+
+                        <span>{item.quantity}</span>
+
+                        <button onClick={() => increaseQty(item.id)}>+</button>
+
 
                         <button onClick={() => removeFromCart(item.id)} className='delete-btn'>
                             ✕ Remove

@@ -1,6 +1,7 @@
 import React from "react";
 
-const ProductCard = ({ product, openModal, addToCart }) => {
+const ProductCard = ({ product, openModal, addToCart, toggleWishlist, wishlist = [] }) => {
+  const isInWishlist = wishlist.some((item) => item.id === product.id);
 
   return (
     <div className="card">
@@ -11,7 +12,27 @@ const ProductCard = ({ product, openModal, addToCart }) => {
 
       <p>${product.price}</p>
 
-      <p>{product.category}</p>
+    <div>
+    {"⭐".repeat(Math.round(product.rating?.rate))}
+    {"☆".repeat(5 - Math.round(product.rating?.rate))}
+    </div>
+
+    <p>{product.rating.rate} ({product.rating?.count} reviews)</p>
+
+      
+
+    <p>{product.category}</p>
+
+      <div className="wishlist-btn-container">
+        <button 
+          onClick={() => toggleWishlist(product)} 
+          className={`wishlist-btn ${isInWishlist ? 'in-wishlist' : ''}`}
+        >
+          ❤️
+        </button>
+      </div>
+
+      
 
       <button onClick={() => openModal(product)}>
         View Details
