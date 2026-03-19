@@ -46,4 +46,4 @@ const ProductCard = ({ product, openModal, addToCart, toggleWishlist, wishlist =
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);

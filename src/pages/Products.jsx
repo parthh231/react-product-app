@@ -1,15 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useCallback} from 'react'
 import { getProducts } from '../services/api';
 import SearchBar from '../components/SearchBar';
 import Filter from '../components/Filter';
 import ProductCard from '../components/ProductCard';
 import Pagination from '../components/Pagination';
-import ProductModel from '../components/ProductModel';
-import CartModal from '../components/CartModal';
 import Sort from '../components/Sort';
 import SkeletonCard from '../components/SkeletonCard';
 import useDebounce from '../hooks/useDebounce';
+import { toast } from 'react-toastify';
 import { ThemeContext } from '../context/ThemeContext';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { lazy, Suspense } from 'react';
+import Wishlist from './Wishlist';
+import Checkout from './Checkout';
+import {Toast} from '../components/Toast';
+const CartModal = lazy(() => import("../components/CartModal"));
+const ProductModel = lazy(() => import("../components/ProductModel"))
 
 const Products = () => {
 
@@ -23,11 +29,12 @@ const Products = () => {
     const [cart, setCart] = useState([]);
     const [showCart, setShowCart] = useState(false);
     const [sortOption, setSortOption] = useState("default");
-    const [wishlist, setWishlist] = useState([]);
+    const [wishlist, setWishlist] = useLocalStorage("wishlist",[]);
     const [loading, setLoading] = useState(true);
-
     const debouncedSearch = useDebounce(search, 500);
     const {toggleTheme, theme} = useContext(ThemeContext);
+    const [showWishlist, setShowWishlist] = useState(false);
+    const [showCheckout, setShowCheckout] = useState(false);
 
     // const productsPerPage = 5;
 
@@ -56,17 +63,17 @@ const Products = () => {
     //     return () => clearTimeout(timer);
     // },[search]);
 
-    useEffect(() => {
-        const savedWishlist = localStorage.getItem("wishlist");
+    // useEffect(() => {
+    //     const savedWishlist = localStorage.getItem("wishlist");
 
-        if(savedWishlist){
-            setWishlist(JSON.parse(savedWishlist));
-        }
-    },[]);
+    //     if(savedWishlist){
+    //         setWishlist(JSON.parse(savedWishlist));
+    //     }
+    // },[]);
 
-    useEffect(() => {
-        localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    },[wishlist]);
+    // useEffect(() => {
+    //     localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    // },[wishlist]);
 
     //search + filter
     const filteredProducts = products.filter((product) => {
@@ -129,20 +136,24 @@ const Products = () => {
     //Add To Cart function
 
     const addToCart = (product) => {
-        const existingProduct = cart.find((item) => item.id === product.id);
+    setCart((prevCart) => {
 
-        if(existingProduct) {
-            const updatedCart = cart.map((item) =>
-                item.id === product.id 
-                ? {...item, quantity:item.quantity + 1}
-                : item
-            );
+    const existingProduct = prevCart.find(
+      (item) => item.id === product.id
+    );
 
-            setCart(updatedCart);
-        }else {
-            setCart([...cart, { ...product, quantity: 1}]);
-        }
-    };
+    if (existingProduct) {
+      return prevCart.map((item) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    }
+    // toast.success("Product added to cart ✅")
+
+    return [...prevCart, { ...product, quantity: 1 }];
+  });
+};
 
     //Increase Quentity Function
     const increaseQty = (id) => {
@@ -184,8 +195,10 @@ const Products = () => {
                 (item) => item.id !== product.id
             );
             setWishlist(updatedWishlist);
+            toast.info("Removed from wishlist!");
         }else{
             setWishlist([...wishlist, product]);
+            toast.success("Added to wishlist!");
         }
     };
 
@@ -198,44 +211,54 @@ const Products = () => {
                 <Sort setSortOption={setSortOption} />
             </div>
             <div className='cart-badge'>
-                <button onClick={toggleTheme}>
-                  {theme === 'light' ? 'Switch to Dark' : 'Switch to Light'}
-                </button>
+                <h2 onClick={toggleTheme}>
+                  {theme === 'light' ? '🌙 Dark' : '☀ Light'}
+                </h2>
             </div>
             <div className='cart-badge'>
                 <h2 onClick={() => setShowCart(true)}>🛒 Cart ({cart.length})</h2>
             </div>
 
             <div className='cart-badge'>
-                <h2>❤️ Wishlist ({wishlist.length})</h2>
-
+                <h2 onClick={() => setShowWishlist(true)}>❤️ Wishlist ({wishlist.length})</h2>
             </div>
         </div>
 
-        <div className='grid'>
-            {loading || products.length === 0
-            ? Array.from({length:6}).map((_,i)=>(
-                <SkeletonCard key={i} />
-            ))
-            
-            : currentProducts.map((product) => (
-                <ProductCard 
-                key={product.id} 
-                product={product} 
-                openModal={setSelectedProduct}
-                addToCart = {addToCart}  
-                toggleWishlist = {toggleWishlist}
-                wishlist = {wishlist}
-                />
-            ))}
-        </div>
+        {showWishlist ? (
+            <Wishlist 
+            wishlist={wishlist}
+            toggleWishlist={toggleWishlist}
+            addToCart={addToCart}
+            closeWishlist={() => setShowWishlist(false)}
+            />
+        ) : (
+            <>
+                <div className='grid'>
+                    {loading || products.length === 0
+                    ? Array.from({length:6}).map((_,i)=>(
+                        <SkeletonCard key={i} />
+                    ))
+                    
+                    : currentProducts.map((product) => (
+                        <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        openModal={setSelectedProduct}
+                        addToCart = {addToCart}  
+                        toggleWishlist = {toggleWishlist}
+                        wishlist = {wishlist}
+                        />
+                    ))}
+                </div>
 
-    {/* only show indicator when there are more items to reveal */}
-    {sortedProducts.length > 0 && visibleCount < sortedProducts.length && (
-      <p style={{ textAlign: "center" }}>
-        Loading more products...
-      </p>
-    )}
+                {/* only show indicator when there are more items to reveal */}
+                {sortedProducts.length > 0 && visibleCount < sortedProducts.length && (
+                  <p style={{ textAlign: "center" }}>
+                    Loading more products...
+                  </p>
+                )}
+            </>
+        )}
 
         {/* <Pagination 
           total={filteredProducts.length}
@@ -243,13 +266,20 @@ const Products = () => {
           setCurrentPage={setCurrentPage}
         />   */}
 
+    <Suspense fallback={<p>Loading...</p>}>
     {selectedProduct && (
     <ProductModel
     product={selectedProduct}
     closeModal={() => setSelectedProduct(null)}
     />
     )}
+    </Suspense>
 
+    {showCheckout && (
+        <Checkout cart={cart}/>
+    )}
+
+    <Suspense fallback={<p>Loading cart...</p>}>
     {showCart && (
       <CartModal
         cart={cart}
@@ -257,8 +287,11 @@ const Products = () => {
         removeFromCart={removeFromCart}
         increaseQty={increaseQty}
         decreaseQty={decreaseQty}
+        openCheckout={() => setShowCart(true)}
       />
     )}
+    </Suspense>
+
     </div>
   );
 };

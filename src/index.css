@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* @import "tailwindcss"; */
 
 * {
   margin: 0;
@@ -26,7 +26,7 @@ html.light {
 
 html.dark {
   --bg-color: #121212;
-  --text-color: #f5f5f5;
+  --text-color: #ffffff;
   --card-bg: #1e1e1e;
   --header-bg: #1f1f1f;
   --modal-bg: #2a2a2a;
@@ -243,11 +243,24 @@ select {
   background-color: #5a6268;
 }
 
-/* Sort Component Styling */
-.sort-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Toast notifications */
+.Toastify__toast {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: 1px solid #ddd;
+}
+
+.Toastify__toast--success {
+  border-color: #28a745;
+}
+
+.Toastify__toast--info {
+  border-color: #17a2b8;
+}
+
+.Toastify__close-button {
+  color: var(--text-color) !important;
+
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 12px 18px;
   border-radius: 8px;
@@ -268,12 +281,14 @@ select {
   border-radius: 5px !important;
   margin-bottom: 0 !important;
   margin-left: 0 !important;
-  background-color: #333 !important;
-  color: #EEEEEE !important;
+  background-color: whitesmoke !important;
+  color: #333 !important;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
   min-width: 180px;
+  /* color: var(--text-color);
+  background: var(--card-bg); */
 }
 
 .sort-select:hover {
@@ -290,7 +305,7 @@ select {
 .sort-select option {
   padding: 10px;
   background: #333;
-  color: #333;
+  color: whitesmoke;
 }
 
 /* Wishlist Button Styling */
@@ -367,4 +382,62 @@ select {
 .dark {
   background-color: #121212;
   color: white;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: black;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+}
+
+.header-btn {
+  background: #2c2c2c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.header-btn:hover {
+  transform: scale(1.05);
+}
+
+.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.dark .card {
+  background: #1e1e1e;
+  color: white;
+}
+
+.dark .header-btn {
+  background: #2c2c2c;
+}
+
+.light {
+  background-color: #f5f5f5;
+  color: #111;
+}
+
+.light .card {
+  background: white;
+  color: black;
+}
+
+.light .header-btn {
+  background: #e0e0e0;
+  color: black;
+}
+.header-btn {
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
 }

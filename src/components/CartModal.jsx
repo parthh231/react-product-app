@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CartModal = ({cart, closeCart, removeFromCart, increaseQty, decreaseQty}) => {
+const CartModal = ({cart, closeCart, removeFromCart, increaseQty, decreaseQty, openCheckout}) => {
 
     const totalPrice = cart.reduce(
         (total,item) => total + item.price * item.quantity,0
@@ -43,6 +43,12 @@ const CartModal = ({cart, closeCart, removeFromCart, increaseQty, decreaseQty}) 
 
             <button onClick={closeCart} className='close-btn'>
                 Close
+            </button>
+
+            <button onClick={() => {
+                openCheckout();
+            }}>
+                Proceed to Checkout
             </button>
 
         </div>

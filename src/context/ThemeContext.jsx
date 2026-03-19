@@ -1,5 +1,4 @@
-import React from 'react'
-import { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
 export const ThemeContext = createContext();
 
@@ -7,10 +6,6 @@ export const ThemeProvider = ({children}) => {
 
     // try to read saved theme from localStorage (if any)
     const getInitialTheme = () => {
-        if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('theme');
-            if (stored === 'light' || stored === 'dark') return stored;
-        }
         return 'light';
     };
 
@@ -21,7 +16,7 @@ export const ThemeProvider = ({children}) => {
     };
 
     // when the theme changes, keep body/class updated and persist
-    React.useEffect(() => {
+    useEffect(() => {
         if (typeof document !== 'undefined') {
             document.documentElement.className = theme;
         }
